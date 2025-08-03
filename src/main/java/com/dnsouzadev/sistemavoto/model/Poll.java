@@ -1,5 +1,6 @@
 package com.dnsouzadev.sistemavoto.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -25,6 +26,7 @@ public class Poll {
 
     private boolean anonymous;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime expirationDate;
 
     @Column(nullable = false)
