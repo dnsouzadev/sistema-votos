@@ -6,6 +6,7 @@ import com.dnsouzadev.sistemavoto.dto.response.AuthResponse;
 import com.dnsouzadev.sistemavoto.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+//        return ResponseEntity.ok(authService.login(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.login(request));
     }
 }

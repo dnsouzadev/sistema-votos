@@ -5,6 +5,7 @@ import com.dnsouzadev.sistemavoto.dto.response.GenericMessageResponse;
 import com.dnsouzadev.sistemavoto.dto.response.VoteResultResponse;
 import com.dnsouzadev.sistemavoto.model.User;
 import com.dnsouzadev.sistemavoto.service.VoteService;
+import com.dnsouzadev.sistemavoto.utils.AuthenticatedUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,20 +20,12 @@ public class VoteController {
 
     private final VoteService voteService;
 
-    private User getAuthenticatedUser() {
-        return User.builder()
-                .id(UUID.fromString("11111111-1111-1111-1111-111111111111"))
-                .name("Usuário Fictício")
-                .email("teste@exemplo.com")
-                .build();
-    }
-
     @PostMapping
     public ResponseEntity<GenericMessageResponse> vote(
             @PathVariable UUID pollId,
             @RequestBody @Valid VoteRequest request
     ) {
-        User user = getAuthenticatedUser();
+        User user = AuthenticatedUser.get();
 
         voteService.registerVote(pollId, request.getOptionId(), user);
 
@@ -41,7 +34,7 @@ public class VoteController {
 
     @GetMapping("/results")
     public ResponseEntity<VoteResultResponse> getResults(@PathVariable UUID pollId) {
-        User user = getAuthenticatedUser();
+        User user = AuthenticatedUser.get();
 
         var results = voteService.getPollResults(pollId, user);
         return ResponseEntity.ok(VoteResultResponse.builder().results(results).build());

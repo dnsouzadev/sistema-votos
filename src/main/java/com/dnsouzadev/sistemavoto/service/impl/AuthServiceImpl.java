@@ -42,6 +42,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(AuthRequest request) {
+        System.out.println("REQUEST IS: " + request.getEmail());
+        System.out.println("PASSWORD: " +  request.getPassword());
+        System.out.println("RESPONSE: " + new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(), request.getPassword()
@@ -50,6 +53,8 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        System.out.println("USER: " + user);
 
         String token = jwtUtil.generateToken(user);
         return new AuthResponse(token);

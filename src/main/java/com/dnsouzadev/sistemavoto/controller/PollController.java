@@ -7,6 +7,7 @@ import com.dnsouzadev.sistemavoto.model.Poll;
 import com.dnsouzadev.sistemavoto.model.PollOption;
 import com.dnsouzadev.sistemavoto.model.User;
 import com.dnsouzadev.sistemavoto.service.PollService;
+import com.dnsouzadev.sistemavoto.utils.AuthenticatedUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,18 +24,9 @@ public class PollController {
 
     private final PollService pollService;
 
-    // Simulando usuário autenticado (ajuste para Spring Security real depois)
-    private User getAuthenticatedUser() {
-        return User.builder()
-                .id(UUID.fromString("11111111-1111-1131-1111-111111111111"))
-                .name("Usuário Fictício")
-                .email("teste@exemplo.com")
-                .build();
-    }
-
     @PostMapping
     public ResponseEntity<PollResponse> createPoll(@RequestBody @Valid CreatePollRequest request) {
-        User creator = getAuthenticatedUser();
+        User creator = AuthenticatedUser.get();
 
         Poll poll = Poll.builder()
                 .title(request.getTitle())
@@ -62,7 +54,7 @@ public class PollController {
 
     @GetMapping("/user")
     public ResponseEntity<List<PollResponse>> getPollsByUser() {
-        User user = getAuthenticatedUser();
+        User user = AuthenticatedUser.get();
         List<Poll> polls = pollService.listPollsByUser(user);
 
         return ResponseEntity.ok(
