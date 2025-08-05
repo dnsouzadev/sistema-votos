@@ -2,6 +2,7 @@ package com.dnsouzadev.sistemavoto.controller;
 
 import com.dnsouzadev.sistemavoto.dto.request.VoteRequest;
 import com.dnsouzadev.sistemavoto.dto.response.GenericMessageResponse;
+import com.dnsouzadev.sistemavoto.dto.response.PollResultResponse;
 import com.dnsouzadev.sistemavoto.dto.response.VoteResultResponse;
 import com.dnsouzadev.sistemavoto.model.User;
 import com.dnsouzadev.sistemavoto.service.VoteService;
@@ -33,10 +34,9 @@ public class VoteController {
     }
 
     @GetMapping("/results")
-    public ResponseEntity<VoteResultResponse> getResults(@PathVariable UUID pollId) {
+    public ResponseEntity<PollResultResponse> getResults(@PathVariable UUID pollId) {
         User user = AuthenticatedUser.get();
-
-        var results = voteService.getPollResults(pollId, user);
-        return ResponseEntity.ok(VoteResultResponse.builder().results(results).build());
+        PollResultResponse results = voteService.getPollResults(pollId, user);
+        return ResponseEntity.ok(results);
     }
 }

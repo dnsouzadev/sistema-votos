@@ -1,5 +1,7 @@
 package com.dnsouzadev.sistemavoto.service.impl;
 
+import com.dnsouzadev.sistemavoto.dto.response.PollOptionResultResponse;
+import com.dnsouzadev.sistemavoto.dto.response.PollResultResponse;
 import com.dnsouzadev.sistemavoto.model.Poll;
 import com.dnsouzadev.sistemavoto.model.PollOption;
 import com.dnsouzadev.sistemavoto.model.User;
@@ -59,20 +61,32 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public Map<String, Long> getPollResults(UUID pollId, User user) {
+    public PollResultResponse getPollResults(UUID pollId, User requester) {
         Poll poll = pollRepository.findById(pollId)
-                .orElseThrow(() -> new RuntimeException("Votação não encontrada."));
+                .orElseThrow(() -> new RuntimeException("Votação não encontrada"));
 
-        if (!pollService.canUserSeeResults(poll, user)) {
-            throw new SecurityException("Você não tem permissão para ver os resultados.");
+        boolean isOwner = poll.getCreatedBy().getId().equals(requester.getId());
+        if (!poll.isPublicResults() && !isOwner) {
+            throw new RuntimeException("Resultados privados");
         }
 
-        List<PollOption> options = optionRepository.findByPoll(poll);
+        long totalVotes = voteRepository.countByPoll(poll);
 
-        return options.stream().collect(Collectors.toMap(
-                PollOption::getOptionText,
-                opt -> voteRepository.countByPollAndSelectedOptionId(poll, opt.getId())
-        ));
+        List<PollOptionResultResponse> options = poll.getOptions().stream().map(option -> {
+            long voteCount = voteRepository.countBySelectedOption(option);
+            double percentage = totalVotes > 0 ? (voteCount * 100.0) / totalVotes : 0;
+            return PollOptionResultResponse.builder()
+                    .optionId(option.getId())
+                    .text(option.getOptionText())
+                    .votes(voteCount)
+                    .percentage(Math.round(percentage * 10.0) / 10.0)
+                    .build();
+        }).toList();
+
+        return PollResultResponse.builder()
+                .totalVotes(totalVotes)
+                .options(options)
+                .build();
     }
 
     @Override
