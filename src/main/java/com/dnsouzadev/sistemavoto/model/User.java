@@ -23,7 +23,8 @@ public class User implements UserDetails {
     @GeneratedValue
     private UUID id;
 
-    private String name;
+    @Column(unique = true, nullable = false)
+    private String username;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -43,6 +44,10 @@ public class User implements UserDetails {
         return Collections.emptyList();
     }
 
+    public String getName() {
+        return this.username;
+    }
+    
     @Override
     public String getUsername() {
         return this.email;

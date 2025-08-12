@@ -32,6 +32,12 @@ public class Poll {
     @Column(nullable = false)
     private boolean publicResults = true; // se true, qualquer um pode ver
 
+    @Column(nullable = false)
+    private boolean featured = false; // se true, aparece em destaque
+
+    @Column(nullable = false)
+    private boolean active = true; // se false, foi encerrada manualmente
+
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,6 +46,14 @@ public class Poll {
 
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PollOption> options;
+
+    public boolean isExpired() {
+        return expirationDate != null && expirationDate.isBefore(LocalDateTime.now());
+    }
+    
+    public boolean isActiveAndNotExpired() {
+        return active && !isExpired();
+    }
 
     @PrePersist
     public void prePersist() {
