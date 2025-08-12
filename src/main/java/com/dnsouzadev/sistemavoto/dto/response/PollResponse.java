@@ -1,5 +1,6 @@
 package com.dnsouzadev.sistemavoto.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,8 +17,15 @@ public class PollResponse {
     private String description;
     private boolean anonymous;
     private boolean publicResults;
+    private boolean featured;
+    private boolean active;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime expirationDate;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
+    
     private List<OptionResponse> options;
 
     @Data
